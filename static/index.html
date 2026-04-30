@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAIRA-2</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --panel-soft: #eef3f7;
+      --ink: #182027;
+      --muted: #5f6b76;
+      --line: #d9e0e7;
+      --accent: #0f766e;
+      --accent-strong: #0b5f59;
+      --danger: #a33b31;
+      --warn-bg: #fff4df;
+      --warn-line: #e3bd72;
+      --shadow: 0 14px 34px rgba(30, 41, 59, 0.08);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+    }
+
+    aside {
+      background: #17212b;
+      color: #f7fafc;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #d7efe9;
+      color: #0b5f59;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .subhead {
+      margin: 2px 0 0;
+      color: #b9c4ce;
+      font-size: 13px;
+    }
+
+    .status {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .status-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #243241;
+      color: #dce6ee;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .pill.ready { background: #d7efe9; color: #0b5f59; }
+    .pill.busy { background: #fff4df; color: #7c4b00; }
+    .pill.error { background: #fde8e4; color: var(--danger); }
+
+    .tabs {
+      display: grid;
+      gap: 8px;
+    }
+
+    .tab {
+      min-height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: #dce6ee;
+      background: transparent;
+      text-align: left;
+      padding: 9px 12px;
+    }
+
+    .tab.active {
+      background: #d7efe9;
+      color: #0b302d;
+      border-color: #d7efe9;
+    }
+
+    .notice {
+      margin-top: auto;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--warn-line);
+      background: var(--warn-bg);
+      color: #5c3a00;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    main {
+      padding: 22px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .toolbar h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-height: 40px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      padding: 8px 13px;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn.primary:hover { background: var(--accent-strong); }
+    .btn:disabled { opacity: 0.55; cursor: wait; }
+
+    .workspace {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(340px, 430px) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .form-panel {
+      padding: 18px;
+      overflow: auto;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: #2f3b45;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      color: #3a4650;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    input[type="file"], input[type="number"], textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 10px;
+      min-height: 40px;
+    }
+
+    input[type="file"] {
+      padding: 8px;
+      font-size: 13px;
+    }
+
+    textarea {
+      min-height: 72px;
+      resize: vertical;
+      line-height: 1.4;
+    }
+
+    .inline {
+      display: grid;
+      grid-template-columns: 1fr 120px;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .viewer {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: minmax(280px, 54vh) minmax(180px, 1fr);
+      gap: 18px;
+    }
+
+    .image-stage {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      min-height: 280px;
+      background: #101820;
+    }
+
+    .empty {
+      color: #aeb8c2;
+      font-size: 14px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    #frontalPreview {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: none;
+    }
+
+    #overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .box {
+      position: absolute;
+      border: 2px solid #22c55e;
+      box-shadow: 0 0 0 1px rgba(8, 47, 73, 0.65);
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    .box-tag {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translateY(-100%);
+      max-width: 240px;
+      padding: 3px 6px;
+      background: rgba(16, 24, 32, 0.9);
+      color: #ffffff;
+      font-size: 11px;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .output {
+      padding: 18px;
+      overflow: auto;
+    }
+
+    .output-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .output-head h3 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .result-text {
+      white-space: pre-wrap;
+      line-height: 1.55;
+      color: #27333d;
+      margin: 0;
+    }
+
+    .finding-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .finding {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fbfcfd;
+    }
+
+    .finding p {
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .finding small {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+    }
+
+    .error-block {
+      color: var(--danger);
+      background: #fde8e4;
+      border: 1px solid #f4b5ad;
+      border-radius: 8px;
+      padding: 12px;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 980px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        min-height: auto;
+      }
+
+      .tabs {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding: 14px;
+      }
+
+      aside {
+        padding: 16px;
+      }
+
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .actions {
+        width: 100%;
+      }
+
+      .btn {
+        flex: 1;
+      }
+
+      .tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .inline {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="brand">
+        <div class="mark">M2</div>
+        <div>
+          <h1>MAIRA-2</h1>
+          <p class="subhead">Chest X-ray report generation</p>
+        </div>
+      </div>
+
+      <div class="status" aria-live="polite">
+        <div class="status-line"><span>Model</span><span id="modelId" class="pill">microsoft/maira-2</span></div>
+        <div class="status-line"><span>Runtime</span><span id="runtime" class="pill">checking</span></div>
+        <div class="status-line"><span>State</span><span id="loadState" class="pill busy">starting</span></div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="MAIRA-2 mode">
+        <button class="tab active" type="button" data-mode="report">Report</button>
+        <button class="tab" type="button" data-mode="grounded">Grounded Report</button>
+        <button class="tab" type="button" data-mode="phrase">Phrase Grounding</button>
+      </div>
+
+      <div class="notice">
+        Research and development use only. Not for clinical decision-making.
+      </div>
+    </aside>
+
+    <main>
+      <div class="toolbar">
+        <h2 id="modeTitle">Report</h2>
+        <div class="actions">
+          <button class="btn" type="button" id="warmupBtn">Warm Up</button>
+          <button class="btn primary" type="button" id="runBtn">Run</button>
+        </div>
+      </div>
+
+      <div class="workspace">
+        <form class="panel form-panel" id="inferenceForm">
+          <h3 class="section-title">Images</h3>
+          <div class="field">
+            <label for="frontal">Frontal chest X-ray</label>
+            <input id="frontal" name="frontal" type="file" accept="image/*" required>
+          </div>
+          <div class="field report-field">
+            <label for="lateral">Lateral chest X-ray</label>
+            <input id="lateral" name="lateral" type="file" accept="image/*">
+          </div>
+          <div class="field report-field">
+            <label for="priorFrontal">Prior frontal chest X-ray</label>
+            <input id="priorFrontal" name="prior_frontal" type="file" accept="image/*">
+          </div>
+
+          <h3 class="section-title report-field">Study Text</h3>
+          <div class="field report-field">
+            <label for="indication">Indication</label>
+            <textarea id="indication" name="indication" placeholder="Dyspnea."></textarea>
+          </div>
+          <div class="field report-field">
+            <label for="comparison">Comparison</label>
+            <textarea id="comparison" name="comparison" placeholder="None."></textarea>
+          </div>
+          <div class="field report-field">
+            <label for="technique">Technique</label>
+            <textarea id="technique" name="technique" placeholder="PA and lateral views of the chest."></textarea>
+          </div>
+          <div class="field report-field">
+            <label for="priorReport">Prior report</label>
+            <textarea id="priorReport" name="prior_report"></textarea>
+          </div>
+
+          <h3 class="section-title phrase-field" hidden>Phrase</h3>
+          <div class="field phrase-field" hidden>
+            <label for="phrase">Finding phrase</label>
+            <textarea id="phrase" name="phrase" placeholder="Pleural effusion."></textarea>
+          </div>
+
+          <div class="inline">
+            <div class="field">
+              <label for="maxTokens">Max new tokens</label>
+              <input id="maxTokens" name="max_new_tokens" type="number" min="1" max="800" step="1">
+            </div>
+            <button class="btn primary" type="submit">Run</button>
+          </div>
+        </form>
+
+        <section class="viewer">
+          <div class="panel image-stage" id="imageStage">
+            <div class="empty" id="imageEmpty">Select a frontal image</div>
+            <img id="frontalPreview" alt="Frontal chest X-ray preview">
+            <div id="overlay"></div>
+          </div>
+
+          <div class="panel output">
+            <div class="output-head">
+              <h3>Output</h3>
+              <span id="resultMeta" class="pill">idle</span>
+            </div>
+            <div id="resultBody" class="empty">No result yet</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      mode: "report",
+      lastPrediction: null,
+      lastMode: "report",
+      busy: false
+    };
+
+    const els = {
+      tabs: document.querySelectorAll(".tab"),
+      title: document.getElementById("modeTitle"),
+      form: document.getElementById("inferenceForm"),
+      warmup: document.getElementById("warmupBtn"),
+      run: document.getElementById("runBtn"),
+      frontal: document.getElementById("frontal"),
+      preview: document.getElementById("frontalPreview"),
+      imageEmpty: document.getElementById("imageEmpty"),
+      overlay: document.getElementById("overlay"),
+      reportFields: document.querySelectorAll(".report-field"),
+      phraseFields: document.querySelectorAll(".phrase-field"),
+      maxTokens: document.getElementById("maxTokens"),
+      resultBody: document.getElementById("resultBody"),
+      resultMeta: document.getElementById("resultMeta"),
+      modelId: document.getElementById("modelId"),
+      runtime: document.getElementById("runtime"),
+      loadState: document.getElementById("loadState")
+    };
+
+    const modeLabels = {
+      report: "Report",
+      grounded: "Grounded Report",
+      phrase: "Phrase Grounding"
+    };
+
+    const defaultTokens = {
+      report: 300,
+      grounded: 450,
+      phrase: 150
+    };
+
+    function setBusy(isBusy, label = "running") {
+      state.busy = isBusy;
+      els.run.disabled = isBusy;
+      els.warmup.disabled = isBusy;
+      els.resultMeta.textContent = isBusy ? label : "ready";
+      els.resultMeta.className = `pill ${isBusy ? "busy" : "ready"}`;
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      els.tabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.mode === mode));
+      els.title.textContent = modeLabels[mode];
+      els.reportFields.forEach((field) => field.hidden = mode === "phrase");
+      els.phraseFields.forEach((field) => field.hidden = mode !== "phrase");
+      els.maxTokens.value = defaultTokens[mode];
+      renderBoxes();
+    }
+
+    async function refreshHealth() {
+      try {
+        const response = await fetch("/health");
+        const data = await response.json();
+        els.modelId.textContent = data.model_id;
+        els.runtime.textContent = `${data.device} / ${data.dtype}`;
+        els.loadState.textContent = data.loaded ? "loaded" : "not loaded";
+        els.loadState.className = `pill ${data.loaded ? "ready" : "busy"}`;
+      } catch (error) {
+        els.runtime.textContent = "offline";
+        els.runtime.className = "pill error";
+        els.loadState.textContent = "error";
+        els.loadState.className = "pill error";
+      }
+    }
+
+    function addIfPresent(formData, key, value) {
+      if (value instanceof File && value.size > 0) formData.append(key, value);
+      if (typeof value === "string" && value.trim()) formData.append(key, value.trim());
+    }
+
+    function buildReportPayload(grounded) {
+      const formData = new FormData();
+      addIfPresent(formData, "frontal", document.getElementById("frontal").files[0]);
+      addIfPresent(formData, "lateral", document.getElementById("lateral").files[0]);
+      addIfPresent(formData, "prior_frontal", document.getElementById("priorFrontal").files[0]);
+      addIfPresent(formData, "indication", document.getElementById("indication").value);
+      addIfPresent(formData, "comparison", document.getElementById("comparison").value);
+      addIfPresent(formData, "technique", document.getElementById("technique").value);
+      addIfPresent(formData, "prior_report", document.getElementById("priorReport").value);
+      formData.append("get_grounding", grounded ? "true" : "false");
+      addIfPresent(formData, "max_new_tokens", els.maxTokens.value);
+      return formData;
+    }
+
+    function buildPhrasePayload() {
+      const formData = new FormData();
+      addIfPresent(formData, "frontal", document.getElementById("frontal").files[0]);
+      addIfPresent(formData, "phrase", document.getElementById("phrase").value);
+      addIfPresent(formData, "max_new_tokens", els.maxTokens.value);
+      return formData;
+    }
+
+    function imageRect() {
+      if (!els.preview.naturalWidth || els.preview.style.display === "none") return null;
+      const stage = document.getElementById("imageStage").getBoundingClientRect();
+      const imageRatio = els.preview.naturalWidth / els.preview.naturalHeight;
+      const stageRatio = stage.width / stage.height;
+      let width;
+      let height;
+      let left;
+      let top;
+      if (stageRatio > imageRatio) {
+        height = stage.height;
+        width = height * imageRatio;
+        left = (stage.width - width) / 2;
+        top = 0;
+      } else {
+        width = stage.width;
+        height = width / imageRatio;
+        left = 0;
+        top = (stage.height - height) / 2;
+      }
+      return { left, top, width, height };
+    }
+
+    function extractBoxItems(prediction) {
+      if (!Array.isArray(prediction)) return [];
+      const items = [];
+      prediction.forEach((item, index) => {
+        const phrase = item?.[0] || `Finding ${index + 1}`;
+        const boxes = item?.[1];
+        if (!Array.isArray(boxes)) return;
+        boxes.forEach((box) => items.push({ phrase, box }));
+      });
+      return items;
+    }
+
+    function renderBoxes() {
+      els.overlay.innerHTML = "";
+      const rect = imageRect();
+      if (!rect || !state.lastPrediction || state.lastMode === "report") return;
+      extractBoxItems(state.lastPrediction).forEach(({ phrase, box }) => {
+        if (!Array.isArray(box) || box.length !== 4) return;
+        const [x1, y1, x2, y2] = box.map((value) => Math.max(0, Math.min(1, Number(value))));
+        const el = document.createElement("div");
+        el.className = "box";
+        el.style.left = `${rect.left + x1 * rect.width}px`;
+        el.style.top = `${rect.top + y1 * rect.height}px`;
+        el.style.width = `${Math.max(1, (x2 - x1) * rect.width)}px`;
+        el.style.height = `${Math.max(1, (y2 - y1) * rect.height)}px`;
+        const tag = document.createElement("div");
+        tag.className = "box-tag";
+        tag.textContent = phrase;
+        el.appendChild(tag);
+        els.overlay.appendChild(el);
+      });
+    }
+
+    function renderPrediction(data) {
+      state.lastPrediction = data.prediction;
+      state.lastMode = state.mode;
+      els.resultBody.className = "";
+      els.resultBody.innerHTML = "";
+      if (Array.isArray(data.prediction)) {
+        const list = document.createElement("ul");
+        list.className = "finding-list";
+        data.prediction.forEach((item) => {
+          const phrase = item?.[0] || "";
+          const boxes = item?.[1];
+          const li = document.createElement("li");
+          li.className = "finding";
+          const p = document.createElement("p");
+          p.textContent = phrase;
+          li.appendChild(p);
+          const small = document.createElement("small");
+          small.textContent = Array.isArray(boxes) && boxes.length ? `${boxes.length} box${boxes.length === 1 ? "" : "es"}` : "No boxes";
+          li.appendChild(small);
+          list.appendChild(li);
+        });
+        els.resultBody.appendChild(list);
+      } else {
+        const p = document.createElement("p");
+        p.className = "result-text";
+        p.textContent = data.prediction || data.decoded || "";
+        els.resultBody.appendChild(p);
+      }
+      renderBoxes();
+    }
+
+    function initStreamingOutput() {
+      state.lastPrediction = null;
+      els.overlay.innerHTML = "";
+      els.resultBody.className = "";
+      els.resultBody.innerHTML = "";
+      const p = document.createElement("p");
+      p.className = "result-text";
+      p.id = "streamText";
+      els.resultBody.appendChild(p);
+      return p;
+    }
+
+    function appendToken(target, text) {
+      target.textContent += text;
+      target.scrollIntoView({ block: "end" });
+    }
+
+    function parseSseEvent(block) {
+      const event = { type: "message", data: "" };
+      for (const line of block.split("\n")) {
+        if (line.startsWith("event:")) event.type = line.slice(6).trim();
+        if (line.startsWith("data:")) event.data += line.slice(5).trim();
+      }
+      return event;
+    }
+
+    async function consumeSse(response, onToken, onFinal) {
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || response.statusText);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const blocks = buffer.split("\n\n");
+        buffer = blocks.pop() || "";
+        for (const block of blocks) {
+          if (!block.trim()) continue;
+          const event = parseSseEvent(block);
+          const data = event.data ? JSON.parse(event.data) : {};
+          if (event.type === "token") onToken(data.text || "");
+          if (event.type === "final") onFinal(data);
+          if (event.type === "error") throw new Error(data.detail || "Streaming generation failed.");
+        }
+      }
+    }
+
+    function renderError(error) {
+      state.lastPrediction = null;
+      els.overlay.innerHTML = "";
+      els.resultBody.className = "error-block";
+      els.resultBody.textContent = error;
+      els.resultMeta.textContent = "error";
+      els.resultMeta.className = "pill error";
+    }
+
+    async function runInference() {
+      if (!els.frontal.files[0]) {
+        renderError("Select a frontal image first.");
+        return;
+      }
+      setBusy(true, "running");
+      const streamText = initStreamingOutput();
+      try {
+        const endpoint = state.mode === "phrase" ? "/phrase-ground-stream" : "/report-stream";
+        const payload = state.mode === "phrase" ? buildPhrasePayload() : buildReportPayload(state.mode === "grounded");
+        const response = await fetch(endpoint, { method: "POST", body: payload });
+        let finalData = null;
+        await consumeSse(
+          response,
+          (text) => appendToken(streamText, text),
+          (data) => { finalData = data; }
+        );
+        if (finalData) renderPrediction(finalData);
+        await refreshHealth();
+        setBusy(false);
+      } catch (error) {
+        setBusy(false);
+        renderError(error.message || String(error));
+      }
+    }
+
+    els.tabs.forEach((tab) => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
+    els.form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      runInference();
+    });
+    els.run.addEventListener("click", runInference);
+    els.warmup.addEventListener("click", async () => {
+      setBusy(true, "warming");
+      try {
+        const response = await fetch("/warmup", { method: "POST" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || response.statusText);
+        await refreshHealth();
+        setBusy(false);
+      } catch (error) {
+        setBusy(false);
+        renderError(error.message || String(error));
+      }
+    });
+
+    els.frontal.addEventListener("change", () => {
+      const file = els.frontal.files[0];
+      els.overlay.innerHTML = "";
+      state.lastPrediction = null;
+      if (!file) {
+        els.preview.removeAttribute("src");
+        els.preview.style.display = "none";
+        els.imageEmpty.style.display = "block";
+        return;
+      }
+      els.preview.src = URL.createObjectURL(file);
+      els.preview.style.display = "block";
+      els.imageEmpty.style.display = "none";
+    });
+
+    els.preview.addEventListener("load", renderBoxes);
+    window.addEventListener("resize", renderBoxes);
+
+    setMode("report");
+    refreshHealth();
+  </script>
+</body>
+</html>

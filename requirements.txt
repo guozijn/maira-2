@@ -1,0 +1,13 @@
+--extra-index-url https://download.pytorch.org/whl/cu130
+torch==2.11.0+cu130
+transformers==4.51.3
+accelerate
+fastapi
+huggingface_hub
+pillow
+protobuf
+python-multipart
+requests
+safetensors
+sentencepiece
+uvicorn
